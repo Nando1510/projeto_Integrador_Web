@@ -1,0 +1,71 @@
+const botao_Enviar = document.getElementById('form-login');
+
+if (botao_Enviar) {
+  // SEMPRE QUE FOR FORMULÁRIO O EVENTO É SUBMIT
+  botao_Enviar.addEventListener('submit', logar_Administrador); 
+}
+
+
+
+const botaoVoltar = document.getElementById('voltar'); // Certifique-se de que o id do botão seja 'voltar'
+
+if (botaoVoltar) {
+    botaoVoltar.addEventListener('click', (e) => {
+        e.preventDefault();
+
+        // Tenta chamar a função da página pai (inicio.html)
+        if (window.parent && typeof window.parent.voltarParaDashboard === 'function') {
+            window.parent.voltarParaDashboard();
+        } else {
+            // Alternativa direta caso queira manipular os elementos do pai sem função
+            const parentLoginView = window.parent.document.getElementById('login-view');
+            const parentDashboardView = window.parent.document.getElementById('dashboard-view');
+            
+            if (parentLoginView) parentLoginView.style.display = 'none';
+            if (parentDashboardView) parentDashboardView.style.display = 'block';
+        }
+    });
+}
+
+
+// PREVINE O ENVIO PADRÃO DO FORMULÁRIO
+async function logar_Administrador(event) {
+  event.preventDefault(); 
+
+  const nome = document.getElementById('nome').value.trim();
+  const senha = document.getElementById('senha').value.trim();
+
+  if (!nome || !senha) {
+    alert('Por favor, preencha todos os campos!');
+    return;
+  }
+
+  try {
+    const resposta = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nome, senha })
+    });
+
+    const resultado = await resposta.json();
+
+    if (resposta.ok) {
+      // Se estiver dentro do iframe do painel principal, chama a função para carregar a manutenção no quadrado central
+      if (window.parent && typeof window.parent.carregarManutencaoFiel === 'function') {
+        window.parent.carregarManutencaoFiel();
+      } else {
+        // Fallback caso acesse a página de login diretamente fora do painel
+        window.location.href = '../inicio/inicio.html';
+      }
+    } else {
+      alert(resultado.message || 'Usuário ou senha incorretos!');
+    }
+
+  } catch (error) {
+    console.error('Erro no login:', error);
+    alert('Erro ao tentar fazer login. Tente novamente mais tarde.');
+  }
+}
+
+
+

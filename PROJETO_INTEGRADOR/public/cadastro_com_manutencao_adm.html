@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>IPB - Mapeamento de Dons e Ficha de Membro</title>
+
+  <style>
+    :root {
+      --primary: #00563B;
+      --primary-hover: #003d29;
+      --bg: #f8fafc;
+      --text: #0f172a;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      min-height: 100vh;
+    }
+
+    /* BARRA SUPERIOR */
+    .navbar {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      background: var(--primary);
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+    }
+
+    /* NOME DO ADMINISTRADOR E BOTÃO SAIR */
+    .navbar-direita {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 18px;
+    }
+
+    .bem-vindo-admin {
+      color: white;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .btn-sair {
+      background: #dc2626;
+      color: white;
+      text-decoration: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .btn-sair:hover {
+      background: #b91c1c;
+    }
+
+    /* CARTÃO DO FORMULÁRIO */
+    .form-card {
+      background: white;
+      width: 100%;
+      max-width: 500px;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 15px;
+    }
+
+    .header h2 {
+      color: var(--primary);
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group > label {
+      font-weight: 600;
+      font-size: 0.9rem;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="text"],
+    input[type="tel"],
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 0.95rem;
+    }
+
+    input:focus,
+    select:focus {
+      outline: 2px solid #86bca7;
+      outline-offset: 1px;
+    }
+
+    /* OPÇÕES DE DONS */
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 5px;
+    }
+
+    .checkbox-item {
+      background: #f1f5f9;
+      padding: 8px 12px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.88rem;
+      cursor: pointer;
+    }
+
+    .checkbox-item input {
+      accent-color: var(--primary);
+    }
+
+    /* BOTÃO ENVIAR CADASTRO */
+    .btn-submit {
+      background: var(--primary);
+      color: white;
+      border: none;
+      width: 100%;
+      padding: 12px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+
+    .btn-submit:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    /* BOTÃO MANUTENÇÃO ADM */
+    .btn-manutencao {
+      display: block;
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      background: #166534;
+      color: #ffffff;
+      border: none;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 1rem;
+      text-align: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn-manutencao:hover {
+      background: #14532d;
+    }
+
+    /* AJUSTES PARA CELULARES */
+    @media (max-width: 480px) {
+      body {
+        padding: 12px;
+      }
+
+      .navbar {
+        padding: 10px;
+      }
+
+      .navbar-direita {
+        gap: 10px;
+      }
+
+      .bem-vindo-admin {
+        font-size: 0.82rem;
+      }
+
+      .form-card {
+        padding: 18px;
+      }
+
+      .checkbox-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body class="cadastro-administrador">
+
+  <!-- BARRA SUPERIOR -->
+  <nav class="navbar">
+    <div class="navbar-direita">
+      <span id="bem-vindo-admin" class="bem-vindo-admin">
+        Verificando sessão...
+      </span>
+
+      <a href="" class="btn-sair" onclick="return confirmaSaida()">
+        Sair
+      </a>
+    </div>
+  </nav>
+
+  <!-- FORMULÁRIO DE CADASTRO -->
+  <div class="form-card">
+    <div class="header">
+      <h2>🏛️ IPB - Cadastro &amp; Dons</h2>
+      <p style="font-size: 0.85rem; color: #64748b;">
+        Preencha seus dados para integração comunitária
+      </p>
+    </div>
+
+    <form id="public-form">
+      <div class="form-group">
+        <label for="name">Nome Completo *</label>
+        <input
+          type="text"
+          id="name"
+          placeholder="Ex: João da Silva"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="phone">WhatsApp / Telefone *</label>
+        <input
+          type="tel"
+          id="phone"
+          placeholder="(51) 99999-9999"
+          required
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="role">Vínculo com a Igreja</label>
+        <select id="role">
+          <option value="Membro Comungante">Membro Comungante</option>
+          <option value="Membro Não-Comungante">Membro Não-Comungante</option>
+          <option value="Congregante / Visitante">Congregante / Visitante</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Quais são seus Dons e Aptidões? (Marque os principais)</label>
+        <div class="checkbox-grid">
+          <label class="checkbox-item">
+            <input type="checkbox" name="gifts" value="Ensino"> 📖 Ensino
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="gifts" value="Música"> 🎵 Música
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="gifts" value="Serviço"> 🤝 Serviço
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="gifts" value="Hospitalidade"> 🚪 Hospitalidade
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="gifts" value="Liderança"> 👔 Liderança
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="gifts" value="Diaconia"> 📦 Diaconia
+          </label>
+          <label class="checkbox-item">
+            <input type="checkbox" name="gifts" value="Misericórdia"> ❤️ Misericórdia
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" class="btn-submit" id="btn-save">
+        Enviar Cadastro
+      </button>
+
+      <!-- BOTÃO MANUTENÇÃO ADM -->
+      <button
+        type="button"
+        class="btn-manutencao"
+        onclick="window.location.href='/manutencao_ADM/manutencao_ADM.html'"
+      >
+        Manutenção ADM
+      </button>
+    </form>
+  </div>
+
+  <script>
+    // CADASTRA OS DADOS DO MEMBRO
+    document
+      .getElementById('public-form')
+      .addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const btn = document.getElementById('btn-save');
+        btn.innerText = 'Enviando...';
+        btn.disabled = true;
+
+        const giftsSelected = Array.from(
+          document.querySelectorAll('input[name="gifts"]:checked')
+        ).map(cb => cb.value);
+
+        const ministriesSelected = Array.from(
+          document.querySelectorAll('input[name="ministry"]:checked')
+        ).map(cb => cb.value);
+
+        const dadosFormulario = {
+          name: document.getElementById('name').value,
+          phone: document.getElementById('phone').value,
+          role: document.getElementById('role').value,
+          ministry: ministriesSelected.length > 0
+            ? ministriesSelected
+            : ['Sem Ministério'],
+          status: ministriesSelected.length > 0 ? 'ok' : 'warning',
+          statusText: ministriesSelected.length > 0
+            ? 'Ativo e Engajado'
+            : 'Novo Cadastro (MongoDB)',
+          gifts: giftsSelected.length > 0 ? giftsSelected : ['Serviço'],
+          attendance: {
+            culto: 'Recente',
+            ebd: 'A verificar',
+            oracao: 'A verificar'
+          },
+          risks: ministriesSelected.length > 0
+            ? []
+            : ['Aguardando alocação ministerial inicial'],
+          history: [{
+            date: new Date().toLocaleDateString('pt-BR'),
+            category: 'Cadastro Online',
+            text: 'Preencheu a ficha de dons e dados via formulário público.'
+          }],
+          reminder: {
+            date: null,
+            time: null,
+            repeat: 'none',
+            notified: false
+          }
+        };
+
+        try {
+          const response = await fetch('/api/cadastro', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dadosFormulario)
+          });
+
+          const resultado = await response.json();
+
+          if (response.ok) {
+            alert('Cadastro enviado com sucesso! A equipe pastoral entrará em contato.');
+            document.getElementById('public-form').reset();
+          } else {
+            alert('Erro ao enviar cadastro: ' + (resultado.error || 'Erro desconhecido'));
+          }
+        } catch (err) {
+          alert('Erro de conexão com o servidor: ' + err.message);
+        } finally {
+          btn.innerText = 'Enviar Cadastro';
+          btn.disabled = false;
+        }
+      });
+
+    // VERIFICA A SESSÃO E EXIBE O NOME DO ADMINISTRADOR
+    async function verificarSessaoAdministrador() {
+      const elementoNome = document.getElementById('bem-vindo-admin');
+
+      try {
+        const response = await fetch('/verificar_sessao_administrador');
+
+        if (!response.ok) {
+          throw new Error('Não foi possível verificar a sessão.');
+        }
+
+        const data = await response.json();
+
+        if (!data.logado) {
+          alert('Você precisa estar logado como administrador!');
+          window.location.href = '../administrador_Login/administrador_Login.html';
+          return;
+        }
+
+        elementoNome.textContent = `Bem-vindo(a), ${data.nome}`;
+      } catch (err) {
+        console.error('Erro ao verificar a sessão do administrador:', err);
+        elementoNome.textContent = 'Sessão não verificada';
+        alert('Não foi possível verificar a sessão do administrador.');
+      }
+    }
+
+    verificarSessaoAdministrador();
+
+    // AÇÃO DO BOTÃO SAIR (mantida conforme o código enviado)
+    function confirmaSaida() {
+      if (confirm('Deseja voltar?')) {
+        window.location.href = '../inicio/logado.html';
+      }
+      return false;
+    }
+  </script>
+
+</body>
+</html>

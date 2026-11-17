@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700;800&display=swap" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="css/main.css" />
+    <link rel="stylesheet" href="css/button.css" />
+    <link rel="stylesheet" href="css/records.css" />
+    <link rel="stylesheet" href="css/modal.css" />
+    <link rel="stylesheet" href="style.css" />
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    
+    <script src="manutencao_Fiel.js" defer></script>
+    <title>Pastores Cdastrados - IPB</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(
+                135deg,
+                #d8f0e8,
+                #9bcfc1,
+                #397f83,
+                #174b58
+            );
+            background-size: 300% 300%;
+            color: #244b3b;
+            text-align: center;
+            padding-bottom: 80px; /* espaço para o rodapé fixo */
+        }
+
+        /* Navbar personalizada */
+        .navbar {
+            background: rgba(23, 75, 88, 0.85) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            padding: 15px 30px !important;
+        }
+
+        .navbar-brand {
+            font-weight: 800;
+            letter-spacing: 1px;
+            color: #ffffff !important;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+
+        .navbar-text {
+            color: #e2f3ec !important;
+            font-weight: 600;
+        }
+
+        .header-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #0c3629;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.5);
+            margin-top: 30px;
+            margin-bottom: 20px;
+        }
+
+        .box-search {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            padding: 0 20px;
+        }
+
+        .box-search input {
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            background: #ffffff;
+            color: #244b3b;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Tabela records com estilo refinado */
+        table.records {
+            width: 85%;
+            margin: 0 auto 40px auto;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: linear-gradient(
+                145deg,
+                #ffffff,
+                #e8f3ef
+            );
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 10px 10px 25px rgba(0,0,0,0.12), -5px -5px 15px rgba(255,255,255,0.3);
+        }
+
+        table.records thead {
+            background: rgba(23, 75, 88, 0.9);
+        }
+
+        table.records th {
+            color: #ffffff;
+            font-weight: 700;
+            padding: 15px;
+            border: none;
+        }
+
+        table.records td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            text-align: center;
+            color: #244b3b;
+            font-weight: 500;
+        }
+
+        table.records tbody tr:hover {
+            background-color: rgba(216, 240, 232, 0.5);
+        }
+
+        .icon {
+            cursor: pointer;
+            font-size: 18px;
+            user-select: none;
+            margin: 0 4px;
+            transition: transform 0.2s;
+        }
+
+        .icon:hover {
+            transform: scale(1.2);
+        }
+
+        /* Botão Sair da Navbar */
+        .navbar .btn-danger {
+            background: linear-gradient(145deg, #397c91, #205365) !important;
+            border: none !important;
+            border-radius: 10px !important;
+            font-weight: 600 !important;
+            box-shadow: 0 4px 10px rgba(32, 83, 101, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .navbar .btn-danger:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(145deg, #4b98ad, #28677c) !important;
+        }
+
+        /* Botão da Lupa */
+        .box-search button.btn-primary {
+            background: linear-gradient(145deg, #168b61, #07543e) !important;
+            border: none !important;
+            border-radius: 12px !important;
+            box-shadow: 0 4px 10px rgba(7, 84, 62, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .box-search button.btn-primary:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(145deg, #21a875, #08704e) !important;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(23, 75, 88, 0.9);
+            backdrop-filter: blur(10px);
+            color: #ffffff;
+            text-align: center;
+            padding: 12px 0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        .edit-field {
+            width: 100%;
+            padding: 6px;
+            border-radius: 8px;
+            border: 1px solid #9bcfc1;
+            text-align: center;
+            color: #244b3b;
+            background: #ffffff;
+        }
+
+        .mensagem-vazia td {
+            text-align: center;
+            color: #527568;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body class="cadastro-administrador">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">IGREJA PRESBITERIANA</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+        <div class="d-flex">
+            <a href="#" class="btn btn-danger me-3" onclick="return cadastro()">Novo Pastor / ADMIN</a>
+            <div class="d-flex">
+            <a href="#" class="btn btn-danger me-3" onclick="return voltar()">Voltar</a>
+        </div>
+        </div>
+    </nav>
+    <br />
+
+    <header>
+        <h1 class="header-title">Pastores Cadastrados</h1>
+    </header>
+    <br>
+    <div class="box-search">
+        <input type="search" class="form-control w-25" placeholder="Pesquisar..." id="pesquisar">
+        <button onclick="pesquisando_Dados()" class="btn btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+            </svg>
+        </button>
+    </div>
+
+    <main>
+        <table class="records">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nome</th>
+                    <th>Senha</th>
+                    <th>Data do cadastro</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody id="corpo-tabela"></tbody>
+        </table>
+
+        <script src="manutencao_Fiel.js"></script>
+    </main>
+
+    <footer>
+        Sistema de Gestão Pastoral - IPB © 2026
+    </footer>
+</body>
+</html>
