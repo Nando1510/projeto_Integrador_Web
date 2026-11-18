@@ -180,6 +180,7 @@ const TOTAL_PAGES = Math.ceil(TOTAL_QUESTIONS / QUESTIONS_PER_PAGE);
 
 let currentPage = 1;
 let userAnswers = {};
+let isEditQuestionsMode = false; // Estado para controlar o modo de edição das perguntas
 
 const OPTIONS = [
     { text: '(A) Constantemente; definitivamente certo.', value: '3' },
@@ -209,11 +210,27 @@ function renderPage(page) {
     pageQuestions.forEach((q, idx) => {
         const globalIndex = startIndex + idx + 1;
         const questionCard = document.createElement('div');
-        // Cartão com fundo #ab3535 e texto em branco
         questionCard.className = 'rounded-2xl shadow-sm border border-red-900/30 p-5';
         questionCard.style.backgroundColor = '#04664d';
         questionCard.style.color = '#ffffff';
         questionCard.id = `q-card-${q.id}`;
+
+        let questionHeaderHTML = '';
+        if (isEditQuestionsMode) {
+            questionHeaderHTML = `
+                <div class="flex items-start space-x-3 mb-3">
+                    <span class="bg-white/20 text-white font-bold text-xs px-2 py-1 rounded mt-1">#${globalIndex}</span>
+                    <input type="text" id="edit-q-text-${q.id}" value="${q.text}" oninput="updateQuestionText(${q.id}, this.value)" class="w-full px-3 py-1.5 rounded-lg bg-white/10 border border-white/30 text-white text-sm sm:text-base font-semibold focus:bg-white/20 outline-none">
+                </div>
+            `;
+        } else {
+            questionHeaderHTML = `
+                <div class="flex items-start space-x-3 mb-3">
+                    <span class="bg-white/20 text-white font-bold text-xs px-2 py-1 rounded">#${globalIndex}</span>
+                    <h3 class="text-sm sm:text-base font-semibold text-white">${q.text}</h3>
+                </div>
+            `;
+        }
 
         let optionsHTML = '';
         OPTIONS.forEach((opt, optIdx) => {
@@ -232,10 +249,7 @@ function renderPage(page) {
         });
 
         questionCard.innerHTML = `
-            <div class="flex items-start space-x-3 mb-3">
-                <span class="bg-white/20 text-white font-bold text-xs px-2 py-1 rounded">#${globalIndex}</span>
-                <h3 class="text-sm sm:text-base font-semibold text-white">${q.text}</h3>
-            </div>
+            ${questionHeaderHTML}
             <div class="grid grid-cols-1 gap-2 pt-1">
                 ${optionsHTML}
             </div>
@@ -247,6 +261,48 @@ function renderPage(page) {
     updateNavigationUI();
     hideValidationAlert();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function toggleEditQuestionsMode() {
+    const btn = document.getElementById('btn-edit-mode');
+    if (!isEditQuestionsMode) {
+        // Entrar no modo de edição
+        isEditQuestionsMode = true;
+        btn.innerText = 'Salvar Alteração';
+        btn.className = 'text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1 rounded-full transition shadow-sm cursor-pointer';
+        renderPage(currentPage);
+    } else {
+        // Salvar alterações e sair do modo de edição
+        saveCurrentPageInputs();
+        isEditQuestionsMode = false;
+        btn.innerText = 'Editar Pergunta';
+        btn.className = 'text-xs font-semibold bg-amber-500 hover:bg-amber-600 text-white px-3 py-1 rounded-full transition shadow-sm cursor-pointer';
+
+        alert('Pergunta(s) alterada(s) com sucesso!!!');
+
+        currentPage = 1;
+        renderPage(currentPage);
+    }
+}
+
+function updateQuestionText(questionId, newText) {
+    const qObj = QUESTIONS_DATA.find(item => item.id === questionId);
+    if (qObj) {
+        qObj.text = newText;
+    }
+}
+
+function saveCurrentPageInputs() {
+    const startIndex = (currentPage - 1) * QUESTIONS_PER_PAGE;
+    const endIndex = Math.min(startIndex + QUESTIONS_PER_PAGE, TOTAL_QUESTIONS);
+    const pageQuestions = QUESTIONS_DATA.slice(startIndex, endIndex);
+
+    pageQuestions.forEach(q => {
+        const input = document.getElementById(`edit-q-text-${q.id}`);
+        if (input) {
+            q.text = input.value;
+        }
+    });
 }
 
 function handleSelectAnswer(questionId, value) {
@@ -318,6 +374,15 @@ function hideValidationAlert() {
 }
 
 function goToNextPage() {
+    if (isEditQuestionsMode) {
+        saveCurrentPageInputs();
+        if (currentPage < TOTAL_PAGES) {
+            currentPage++;
+            renderPage(currentPage);
+        }
+        return;
+    }
+
     if (validateCurrentPage() && currentPage < TOTAL_PAGES) {
         currentPage++;
         renderPage(currentPage);
@@ -325,6 +390,9 @@ function goToNextPage() {
 }
 
 function goToPreviousPage() {
+    if (isEditQuestionsMode) {
+        saveCurrentPageInputs();
+    }
     if (currentPage > 1) {
         currentPage--;
         renderPage(currentPage);
